@@ -1,0 +1,235 @@
+---
+title: Influence of Female Education on Fertility Rate across Countries
+format: html
+autor: Fayomi Abigail Oludayo 
+---
+
+```{python}
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+```
+
+
+```{python}
+
+education = pd.read_csv("data/female_education.csv")
+
+education = education.rename(columns={"name": "country"})
+
+education = education.melt(
+    id_vars=["geo", "country"],
+    var_name="year",
+    value_name="education"
+)
+
+education["year"] = pd.to_numeric(education["year"], errors="coerce")
+education["education"] = pd.to_numeric(education["education"], errors="coerce")
+
+education = education.dropna(subset=["year", "education"])
+
+# optional: make year integer
+education["year"] = education["year"].astype(int)
+education
+```
+
+```{python}
+fertility = pd.read_csv("data/fertility_rate.csv")
+
+fertility = fertility.rename(columns={"name": "country"})
+
+fertility = fertility.melt(
+    id_vars=["geo", "country"],
+    var_name="year",
+    value_name="fertility"
+)
+
+fertility["year"] = pd.to_numeric(fertility["year"], errors="coerce")
+fertility["fertility"] = pd.to_numeric(fertility["fertility"], errors="coerce")
+fertility = fertility.dropna(subset=["year", "fertility"])
+fertility["year"] = fertility["year"].astype(int)
+fertility
+```
+
+```{python}
+population = pd.read_csv("data/population.csv")
+
+population = population.rename(columns={"name": "country"})
+
+population = population.melt(
+    id_vars=["geo", "country"],
+    var_name="year",
+    value_name="population"
+)
+
+population["year"] = pd.to_numeric(population["year"], errors="coerce")
+population["population"] = pd.to_numeric(population["population"], errors="coerce")
+population = population.dropna(subset=["year", "population"])
+population["year"] = population["year"].astype(int)
+population
+```
+
+```{python}
+df = education.merge(
+    fertility,
+    on= ['geo', 'country', 'year'],
+    how= 'inner'
+)
+df = df.merge(
+    population,
+    on= ['geo', 'country', 'year'],
+    how= 'inner'
+)
+df = df[(df['year']>=1960) & (df['year']<= 2020)]
+print(df.head())
+```
+
+
+```{python}
+fig1 = px.scatter(
+    df,
+    x="education",
+    y="fertility",
+    size="population",
+    hover_name="country",
+    animation_frame="year",
+    title="Education vs Fertility Over Time",
+    labels={
+        "education": "Female Education (Years)",
+        "fertility": "Fertility Rate"
+    }
+)
+
+fig1.show()
+```
+
+```{python}
+
+filtered_df = df[df["year"] == 2007]
+
+fig2 = px.scatter(
+    filtered_df,
+    x="education",
+    y="fertility",
+    size="population",
+    hover_name="country",
+    title=f"Education vs Fertility in {2007}",
+    labels={
+        "education": "Female Education (Years)",
+        "fertility": "Fertility Rate"
+    }
+)
+
+fig2.show()
+```
+
+
+```{python}
+education_trend = df.groupby("year", as_index=False)["education"].mean()
+
+edu = px.line(
+    education_trend,
+    x="year",
+    y="education",
+    title="Average Female Education Over Time"
+)
+
+edu.show()
+```
+
+
+```{python}
+fertility_trend = df.groupby("year", as_index=False)["fertility"].mean()
+
+fert = px.line(
+    fertility_trend,
+    x="year",
+    y="fertility",
+    title="Average Fertility Over Time"
+)
+
+fert.show()
+```
+
+```{python}
+selected_year = 2007
+filtered_df = df[df["year"] == selected_year]
+
+top_education = filtered_df.nlargest(10, "education")
+
+top_edu = px.bar(
+    top_education,
+    x="education",
+    y="country",
+    orientation = 'h',
+    color_discrete_sequence=["skyblue"],
+    title=f"Top 10 Countries by Female Education in {selected_year}"
+)
+top_edu.update_layout(height=600)
+top_edu.update_yaxes(categoryorder = 'total ascending')
+top_edu.show()
+```
+
+```{python}
+top_fertility = filtered_df.nlargest(10, "fertility")
+
+top_fert = px.bar(
+    top_fertility,
+    x="fertility",
+    y="country",
+    orientation = 'h',
+    color_discrete_sequence=["skyblue"],
+    title=f"Top 10 Countries by Fertility in {selected_year}"
+)
+top_fert.update_layout(height=600)
+top_fert.update_yaxes(categoryorder = 'total ascending')
+top_fert.show()
+```
+
+```{python}
+selected_year = 2007
+filtered_df = df[df["year"] == selected_year]
+
+avg_education = filtered_df["education"].mean()
+avg_fertility = filtered_df["fertility"].mean()
+total_population = filtered_df["population"].sum()
+
+print("Average education:", round(avg_education, 2))
+print("Average fertility:", round(avg_fertility, 2))
+print("Total population:", round(total_population, 0))
+```
+
+
+```{python}
+countries_to_compare = ["Nigeria", "Germany"]
+
+compare_df = df[df["country"].isin(countries_to_compare)]
+
+compare_edu = px.line(
+    compare_df,
+    x="year",
+    y="education",
+    color="country",
+    title="Education Comparison Over Time"
+)
+
+compare_edu.show()
+```
+
+```{python}
+compare_fert = px.line(
+    compare_df,
+    x="year",
+    y="fertility",
+    color="country",
+    title="Fertility Comparison Over Time"
+)
+
+compare_fert.show()
+```
+
+```{python}
+df.to_csv("education_fertility.csv", index=False)
+df= pd.read_csv('education_fertility.csv')
+df
+```
