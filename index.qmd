@@ -1,75 +1,58 @@
 ---
 title: Influence of Female Education on Fertility Rate across Countries
-format: html
+format: dashboard
 autor: Fayomi Abigail Oludayo 
+jupyter: python3
+execute:
+    echo: false
+dashboard:
+    expand: false
 ---
 
 ```{python}
 import pandas as pd
 import plotly.express as px
-import streamlit as st
-```
 
-
-```{python}
 
 education = pd.read_csv("data/female_education.csv")
-
 education = education.rename(columns={"name": "country"})
-
 education = education.melt(
     id_vars=["geo", "country"],
     var_name="year",
     value_name="education"
 )
-
 education["year"] = pd.to_numeric(education["year"], errors="coerce")
 education["education"] = pd.to_numeric(education["education"], errors="coerce")
-
 education = education.dropna(subset=["year", "education"])
-
-# optional: make year integer
 education["year"] = education["year"].astype(int)
-education
-```
 
-```{python}
+
 fertility = pd.read_csv("data/fertility_rate.csv")
-
 fertility = fertility.rename(columns={"name": "country"})
-
 fertility = fertility.melt(
     id_vars=["geo", "country"],
     var_name="year",
     value_name="fertility"
 )
-
 fertility["year"] = pd.to_numeric(fertility["year"], errors="coerce")
 fertility["fertility"] = pd.to_numeric(fertility["fertility"], errors="coerce")
 fertility = fertility.dropna(subset=["year", "fertility"])
 fertility["year"] = fertility["year"].astype(int)
-fertility
-```
 
-```{python}
+
 population = pd.read_csv("data/population.csv")
-
 population = population.rename(columns={"name": "country"})
-
 population = population.melt(
     id_vars=["geo", "country"],
     var_name="year",
     value_name="population"
 )
-
 population["year"] = pd.to_numeric(population["year"], errors="coerce")
 population["population"] = pd.to_numeric(population["population"], errors="coerce")
 population = population.dropna(subset=["year", "population"])
 population["year"] = population["year"].astype(int)
-population
-```
 
-```{python}
+
 df = education.merge(
     fertility,
     on= ['geo', 'country', 'year'],
@@ -81,11 +64,7 @@ df = df.merge(
     how= 'inner'
 )
 df = df[(df['year']>=1960) & (df['year']<= 2020)]
-print(df.head())
-```
 
-
-```{python}
 fig1 = px.scatter(
     df,
     x="education",
@@ -100,33 +79,22 @@ fig1 = px.scatter(
     }
 )
 
-fig1.show()
-```
-
-```{python}
 
 filtered_df = df[df["year"] == 2007]
-
 fig2 = px.scatter(
     filtered_df,
     x="education",
     y="fertility",
     size="population",
     hover_name="country",
+    hover_data={"population":":,.0f"},
     title=f"Education vs Fertility in {2007}",
     labels={
         "education": "Female Education (Years)",
         "fertility": "Fertility Rate"
     }
 )
-
-fig2.show()
-```
-
-
-```{python}
 education_trend = df.groupby("year", as_index=False)["education"].mean()
-
 edu = px.line(
     education_trend,
     x="year",
@@ -134,13 +102,8 @@ edu = px.line(
     title="Average Female Education Over Time"
 )
 
-edu.show()
-```
 
-
-```{python}
 fertility_trend = df.groupby("year", as_index=False)["fertility"].mean()
-
 fert = px.line(
     fertility_trend,
     x="year",
@@ -148,15 +111,10 @@ fert = px.line(
     title="Average Fertility Over Time"
 )
 
-fert.show()
-```
 
-```{python}
 selected_year = 2007
 filtered_df = df[df["year"] == selected_year]
-
 top_education = filtered_df.nlargest(10, "education")
-
 top_edu = px.bar(
     top_education,
     x="education",
@@ -167,12 +125,9 @@ top_edu = px.bar(
 )
 top_edu.update_layout(height=600)
 top_edu.update_yaxes(categoryorder = 'total ascending')
-top_edu.show()
-```
 
-```{python}
+
 top_fertility = filtered_df.nlargest(10, "fertility")
-
 top_fert = px.bar(
     top_fertility,
     x="fertility",
@@ -183,24 +138,14 @@ top_fert = px.bar(
 )
 top_fert.update_layout(height=600)
 top_fert.update_yaxes(categoryorder = 'total ascending')
-top_fert.show()
-```
 
-```{python}
+
 selected_year = 2007
 filtered_df = df[df["year"] == selected_year]
-
 avg_education = filtered_df["education"].mean()
 avg_fertility = filtered_df["fertility"].mean()
 total_population = filtered_df["population"].sum()
 
-print("Average education:", round(avg_education, 2))
-print("Average fertility:", round(avg_fertility, 2))
-print("Total population:", round(total_population, 0))
-```
-
-
-```{python}
 countries_to_compare = ["Nigeria", "Germany"]
 
 compare_df = df[df["country"].isin(countries_to_compare)]
@@ -213,10 +158,6 @@ compare_edu = px.line(
     title="Education Comparison Over Time"
 )
 
-compare_edu.show()
-```
-
-```{python}
 compare_fert = px.line(
     compare_df,
     x="year",
@@ -225,11 +166,133 @@ compare_fert = px.line(
     title="Fertility Comparison Over Time"
 )
 
-compare_fert.show()
+avg_education = round(filtered_df["education"].mean(), 2)
+avg_fertility = round(filtered_df["fertility"].mean(), 2)
+total_population = round(filtered_df["population"].sum() / 1e9, 2)
 ```
 
+
+
+# HOME
+
+This dashboard analyzes the relationship between **female education**, **fertility rate**, and **population** across countries from **1960** to **2020**.
+
+Using global development data, the analysis explores how increasing access to education may influence population growth and demographic change.
+
+
+## ROW {height="30%"}
+
+::: {.valuebox icon= "heart" color="#1E90FF" title="Average education"}
+
+`{python} str(avg_education)`
+
+:::
+
+::: {.valuebox icon= "heart" color="#7e77e4" title="Average fertility"}
+
+`{python} str(avg_fertility)`
+
+:::
+
+::: {.valuebox icon= "heart" color="#1efff4" title="Total population"}
+
+`{python} str(total_population)`
+
+:::
+
+## ROW {height="70%"}
+
+### {width="50%"}
+
 ```{python}
-df.to_csv("education_fertility.csv", index=False)
-df= pd.read_csv('education_fertility.csv')
-df
+fig1
 ```
+
+
+### {width="50%"}
+
+```{python}
+fig2
+```
+
+Countries with higher levels of female education tend to have lower fertility rates. 
+This suggests a strong negative relationship between education and the number of children per woman.
+
+
+# TRENDS
+
+## Row {height=50%}
+
+### {width="50%"}
+
+```{python}
+edu
+```
+
+### {width=50%}
+
+```{python}
+fert
+```
+
+
+### {width=20%}
+
+Over time, female education has steadily increased globally, while fertility rates have declined. 
+This pattern supports the idea that improved education is associated with lower fertility.
+
+
+# Rankings
+
+## Row 1 {height=50%}
+```{python}
+top_edu
+```
+
+
+## Row 2 {height=50%}
+
+```{python}
+top_fert
+```
+
+
+
+# Yearly Trend
+
+## Row 1 {height=70%}
+
+### {width="50%"}
+
+```{python}
+compare_edu
+```
+
+### {width="50%"}
+
+```{python}
+compare_fert
+```
+
+
+# Country comparison
+
+## Row {height=60%}
+
+### Column {width="80%"}
+```{python}
+fig1
+```
+
+
+# ABOUT
+
+Data source: Global development indicators dataset (education, fertility, population).
+Visualization built using Python, Pandas, Plotly, and Quarto.
+
+
+
+
+
+
+
