@@ -1,7 +1,7 @@
 ---
-title: Influence of Female Education on Fertility Rate across Countries
+title: "INFLUENCE OF FEMALE EDUCATION ON FERTILITY RATE ACROSS COUNTRIES"
 format: dashboard
-autor: Fayomi Abigail Oludayo 
+author: Fayomi Abigail Oludayo 
 jupyter: python3
 execute:
     echo: false
@@ -81,7 +81,7 @@ fig1 = px.scatter(
 
 
 filtered_df = df[df["year"] == 2007]
-fig2 = px.scatter(
+fig2007 = px.scatter(
     filtered_df,
     x="education",
     y="fertility",
@@ -122,7 +122,7 @@ top_edu = px.bar(
     orientation = 'h',
     color_discrete_sequence=["skyblue"],
     title=f"Top 10 Countries by Female Education in {selected_year}"
-)
+).update_yaxes(categoryorder="total ascending")
 
 
 top_fertility = filtered_df.nlargest(10, "fertility")
@@ -133,16 +133,10 @@ top_fert = px.bar(
     orientation = 'h',
     color_discrete_sequence=["skyblue"],
     title=f"Top 10 Countries by Fertility in {selected_year}"
-)
+).update_yaxes(categoryorder="total ascending")
 
 
-selected_year = 2007
-filtered_df = df[df["year"] == selected_year]
-avg_education = filtered_df["education"].mean()
-avg_fertility = filtered_df["fertility"].mean()
-total_population = filtered_df["population"].sum()
-
-countries_to_compare = ["Nigeria", "Germany"]
+countries_to_compare = ["Nigeria", "Canada", "Niger", "Switzerland", "Germany"]
 
 compare_df = df[df["country"].isin(countries_to_compare)]
 
@@ -162,38 +156,49 @@ compare_fert = px.line(
     title="Fertility Comparison Over Time"
 )
 
+selected_year = 2007
+filtered_df = df[df["year"] == selected_year]
+
 avg_education = round(filtered_df["education"].mean(), 2)
 avg_fertility = round(filtered_df["fertility"].mean(), 2)
 total_population = round(filtered_df["population"].sum() / 1e9, 2)
+
+highest_population_country = filtered_df.loc[filtered_df["population"].idxmax(), "country"]
+highest_population_value = filtered_df["population"].max()
+
+highest_fertility_country = filtered_df.loc[filtered_df["fertility"].idxmax(), "country"]
+highest_fertility_value = filtered_df["fertility"].max()
+
+highest_education_country = filtered_df.loc[filtered_df["education"].idxmax(), "country"]
+highest_education_value = filtered_df["education"].max()
 ```
+
 
 
 
 # HOME
 
-This dashboard analyzes the relationship between **female education**, **fertility rate**, and **population** across countries from **1960** to **2020**.
-
-Using global development data, the analysis explores how increasing access to education may influence population growth and demographic change.
+Using global development data, the analysis explores how increasing access to education may influence population growth and demographic change. This page shows the trends and patterns in education, fertility, and population levels for the year 2007, providing insights into the global state of these key indicators.
 
 
 ## ROW {height="30%"}
 
 ::: {.valuebox icon= "heart" color="#1E90FF" title="Average education"}
+`{python} str{avg_education}`
 
-`{python} str(avg_education)`
-
+`{python} {highest_education_country}`
 :::
 
 ::: {.valuebox icon= "heart" color="#7e77e4" title="Average fertility"}
+`{python} str{avg_fertility}`
 
-`{python} str(avg_fertility)`
-
+`{python} {highest_fertility_country}`
 :::
 
-::: {.valuebox icon= "heart" color="#1efff4" title="Total population"}
+::: {.valuebox icon= "graph-up" color="#1efff4" title="Total population"}
+`{python} str{total_population}`
 
-`{python} str(total_population)`
-
+`{python} {highest_population_country}`
 :::
 
 ## ROW {height="70%"}
@@ -208,16 +213,23 @@ fig1
 ### {width="50%"}
 
 ```{python}
-fig2
+fig2007
 ```
 
-Countries with higher levels of female education tend to have lower fertility rates. 
-This suggests a strong negative relationship between education and the number of children per woman.
+
+Countries with higher levels of female education tend to have lower fertility rates. This suggests a strong negative relationship between education and the number of children per woman.
 
 
 # TRENDS
 
-## Row {height=50%}
+**Global Trends**
+
+This section examines how female education and fertility rates have changed over time across countries.
+
+The visualizations show that as access to education for women has increased globally, fertility rates have generally declined. This pattern highlights the important role education plays in shaping demographic and social development.
+
+
+## Row {height=60%}
 
 ### {width="50%"}
 
@@ -232,21 +244,24 @@ fert
 ```
 
 
-### {width=20%}
+# RANKINGS
 
-Over time, female education has steadily increased globally, while fertility rates have declined. 
-This pattern supports the idea that improved education is associated with lower fertility.
+**Country Rankings**
 
+This section highlights the top countries with the highest female education levels and the highest fertility rates in the selected year.
 
-# Rankings
+By comparing these rankings, it becomes easier to see how countries with higher education levels for women often experience lower fertility rates, while countries with limited access to education tend to have higher fertility levels.
 
 ## Row 1 {height=50%}
+
+### {width=50%}
+
 ```{python}
 top_edu
 ```
 
 
-## Row 2 {height=50%}
+## Row 2 {width=50%}
 
 ```{python}
 top_fert
@@ -254,38 +269,91 @@ top_fert
 
 
 
-# Yearly Trend
+# YEARLY TREND
 
-## Row 1 {height=70%}
+This section explores how the relationship between female education and fertility rates in selected countriesevolves across years.
 
-### {width="50%"}
+The visualization illustrates how these countries move over time as education levels increase and fertility rates decrease, showing long-term global demographic changes.
 
+## Row {height=80%}
+
+### {width="40%"}
 ```{python}
 compare_edu
 ```
 
-### {width="50%"}
-
+### {width="30%"}
 ```{python}
 compare_fert
 ```
 
 
-# Country comparison
+# COUNTRY COMPARISON
 
-## Row {height=60%}
+By comparing countries, the dashboard highlights how differences in educational opportunities for women can influence fertility patterns and population growth.
 
-### Column {width="80%"}
+## Row {height=80%}
+
 ```{python}
 fig1
 ```
 
 
+# DATA SOURCES
+
+```{python}
+itables.show(
+    df,
+    caption="Full Tips Dataset",
+    buttons=["csvHtml5"]
+)
+```
+
 # ABOUT
 
-Data source: Global development indicators dataset (education, fertility, population).
-Visualization built using Python, Pandas, Plotly, and Quarto.
+This dashboard analyzes the relationship between **female education** levels, **fertility rates** and **population** across countries from **1960** to **2020**. The goal of the project is to explore how improvements in women's education may influence population growth and demographic change globally.
 
+The analysis combines multiple datasets on female education, fertility rates, and population to examine both global trends and country-level differences. Through interactive visualizations, the dashboard highlights how increases in education are often associated with lower fertility rates across many regions.
+
+**Tools and Technologies**
+
+- This project was developed using the following tools:
+
+- Python for data analysis
+
+- Pandas for data cleaning and transformation
+
+- Plotly for interactive data visualizations
+
+- Quarto for building the interactive dashboard
+
+- GitHub for version control and project sharing
+
+**Key Features**
+
+The dashboard includes several components to explore the data:
+
+- **Key indicators** summarizing education, fertility, and population levels
+
+- **Scatter plots** showing the relationship between education and fertility
+
+- **Trend analysis** illustrating changes over time
+
+- **Country rankings** highlighting the highest education and fertility levels
+
+- **Country comparisons** to analyze differences between nations
+
+**Learning Objective**
+
+This project was created as part of my learning journey in Python and data visualization, with the goal of building practical skills in:
+
+- data cleaning and transformation
+
+- merging and reshaping datasets
+
+- building interactive visualizations
+
+- designing analytical dashboards
 
 
 
