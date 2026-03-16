@@ -224,14 +224,15 @@ This section examines how female education and fertility rates have changed over
 
 The visualizations show that as access to education for women has increased globally, fertility rates have generally declined. This pattern highlights the important role education plays in shaping demographic and social development.
 
+## Row {height="70%"}
 
-## Row {width="50%"}
+### {width="50%"}
 
 ```{python}
 edu
 ```
 
-## {width=50%}
+### {width="50%"}
 
 ```{python}
 fert
@@ -246,7 +247,7 @@ This section highlights the top countries with the highest female education leve
 
 By comparing these rankings, it becomes easier to see how countries with higher education levels for women often experience lower fertility rates, while countries with limited access to education tend to have higher fertility levels.
 
-## Row 1 {height=50%}
+## {height="70%"}
 
 ### {width=50%}
 
@@ -255,7 +256,7 @@ top_edu
 ```
 
 
-## Row 2 {width=50%}
+### {width=50%}
 
 ```{python}
 top_fert
@@ -269,14 +270,14 @@ This section explores how the relationship between female education and fertilit
 
 The visualization illustrates how these countries move over time as education levels increase and fertility rates decrease, showing long-term global demographic changes.
 
-## Row {height=80%}
+## {height="70%"}
 
-### {width="40%"}
+### {width="50%"}
 ```{python}
 compare_edu
 ```
 
-### {width="30%"}
+### {width="50%"}
 ```{python}
 compare_fert
 ```
